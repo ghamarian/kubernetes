@@ -1,2 +1,6 @@
+gcloud container clusters get-credentials mycluster
+gcloud container clusters create mycluster
+gcloud compute disks create --size 1GB main-disk
+run kubectl create -f 01-05*yaml files
+clusterIP should be set before creating pv.yaml file.
 used https://medium.com/platformer-blog/nfs-persistent-volumes-with-kubernetes-a-case-study-ce1ed6e2c266
-
