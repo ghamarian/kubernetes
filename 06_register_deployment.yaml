@@ -1,29 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ezeeai-deployment
+  name: register-deployment
   labels:
-    app: ezeeai
+    app: register
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ezeeai
+      app: register
   template:
     metadata:
       labels:
-        app: ezeeai
+        app: register
     spec:
       containers:
-      - name: ezeeai
-        image: machine2learn/ezeeai:1.0.0
+      - name: register
+        image: eu.gcr.io/metal-imprint-238115/register:1.0.0
         imagePullPolicy: Always
         ports:
         - containerPort: 5000 
-        volumeMounts:
-          # name must match the volume name below
-          - name: my-pvc-nfs
-            mountPath: "/tmp/data"
         env:
           - name: DB_USER
             valueFrom:
@@ -37,8 +33,6 @@ spec:
                 key: password
           - name: DB_HOST
             value: 127.0.0.1:5432
-          - name: DEBUG
-            value: "False"
           - name: SECRET_KEY
             value: machine2learn
           - name: DB_NAME
@@ -46,6 +40,11 @@ spec:
               secretKeyRef:
                 name: db-user-pass
                 key: db
+          - name: SENDGRID_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: sendgrid-api-key
+                key: api_key 
       - name: cloudsql-proxy
         image: gcr.io/cloudsql-docker/gce-proxy:1.11
         command: ["/cloud_sql_proxy",
@@ -62,9 +61,6 @@ spec:
             readOnly: true
 
       volumes:
-      - name: my-pvc-nfs
-        persistentVolumeClaim:
-          claimName: nfs
       - name: cloudsql-instance-credentials
         secret:
             secretName: cloudsql-instance-credentials
